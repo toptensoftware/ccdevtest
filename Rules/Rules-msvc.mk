@@ -3,19 +3,19 @@ ifeq ($(strip $(PROJKIND)),exe)
 TARGETNAME ?= $(PROJNAME).exe
 else ifeq ($(strip $(PROJKIND)),lib)
 TARGETNAME ?= $(PROJNAME).lib
-else ifeq ($(strip $(PROJKIND)),dll)
+else ifeq ($(strip $(PROJKIND)),so)
 TARGETNAME ?= $(PROJNAME).dll
 else
-$(error PROJKIND should be 'exe' or 'lib' or 'dll')
+$(error PROJKIND should be 'exe' or 'lib' or 'so')
 endif 
 TARGET = $(OUTDIR)/$(TARGETNAME)
 
 # Compile/link flags
-COMMONFLAGS += /Zi $(addprefix /D,$(DEFINE)) $(addprefix /I,$(INCLUDEPATH))
-CFLAGS += 
-CPPFLAGS += 
-LDFLAGS += /DEBUG
-LIBFLAGS += 
+COMMONFLAGS = $(MSVC_COMMONFLAGS) /Zi $(addprefix /D,$(DEFINE)) $(addprefix /I,$(INCLUDEPATH))
+CFLAGS = $(MSVC_CFLAGS)
+CPPFLAGS = $(MSVC_CPPFLAGS)
+LDFLAGS = /DEBUG $(MSVC_LDFLAGS)
+ARFLAGS = $(MSVC_ARFLAGS)
 
 # debug vs release
 ifeq ($(strip $(CONFIG)),debug)
@@ -76,7 +76,7 @@ list-libs:
 
 copy-target: $(COPYTARGET)
 
-else ifeq ($(strip $(PROJKIND)),dll)
+else ifeq ($(strip $(PROJKIND)),so)
 
 # Link Rule (dll)
 $(TARGET): $(OBJS) $(LIBS) $(OTHERLIBS)

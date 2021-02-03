@@ -1,2 +1,2 @@
-PROJKIND=dll
+PROJKIND=so
 include ../Rules/Rules.mk

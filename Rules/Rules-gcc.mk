@@ -3,20 +3,20 @@ ifeq ($(strip $(PROJKIND)),exe)
 TARGETNAME ?= $(PROJNAME)
 else ifeq ($(strip $(PROJKIND)),lib)
 TARGETNAME ?= lib$(PROJNAME).a
-else ifeq ($(strip $(PROJKIND)),dll)
+else ifeq ($(strip $(PROJKIND)),so)
 TARGETNAME ?= lib$(PROJNAME).so
 CFLAGS += -fPIC
 else
-$(error PROJKIND should be 'exe' or 'lib' or 'dll')
+$(error PROJKIND should be 'exe' or 'lib' or 'so')
 endif 
 TARGET = $(OUTDIR)/$(TARGETNAME)
 
 # Compile/link flags
-COMMONFLAGS += -Wall -g $(addprefix -D,$(DEFINE)) $(addprefix -I ,$(INCLUDEPATH))
-CFLAGS += 
-CPPFLAGS += -std=c++14 -Wno-aligned-new
-LDFLAGS += -Wl,-rpath=\$${ORIGIN}
-LIBFLAGS += 
+COMMONFLAGS = $(GCC_COMMONFLAGS) -Wall -g $(addprefix -D,$(DEFINE)) $(addprefix -I ,$(INCLUDEPATH))
+CFLAGS = $(GCC_CFLAGS) 
+CPPFLAGS = $(GCC_CPPFLAGS)
+LDFLAGS = $(GCC_LDFLAGS) -Wl,-rpath=\$${ORIGIN}
+ARFLAGS = $(GCC_ARFLAGS)
 
 # debug vs release
 ifeq ($(strip $(CONFIG)),debug)
@@ -79,9 +79,9 @@ list-libs:
 
 copy-target: $(COPYTARGET)
 
-else ifeq ($(strip $(PROJKIND)),dll)
+else ifeq ($(strip $(PROJKIND)),so)
 
-# Link Rule (dll)
+# Link Rule (so)
 $(TARGET): $(OBJS) $(LIBS) $(OTHERLIBS)
 	@echo "  LD    $(notdir $@)"
 	@$(LD) $(LDFLAGS) -shared -Wl,-soname,$(notdir $@) -o $@ $(OBJS) $(LIBS) $(OTHERLIBS)
