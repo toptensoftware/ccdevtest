@@ -13,7 +13,7 @@ TARGET = $(OUTDIR)/$(TARGETNAME)
 
 # Compile/link flags
 COMMONFLAGS = $(GCC_COMMONFLAGS) -Wall -g $(addprefix -D,$(DEFINE)) $(addprefix -I ,$(INCLUDEPATH))
-CFLAGS = $(GCC_CFLAGS) 
+CFLAGS = $(GCC_CFLAGS) -std=gnu99
 CPPFLAGS = $(GCC_CPPFLAGS)
 LDFLAGS = $(GCC_LDFLAGS) -Wl,-rpath=\$${ORIGIN}
 ARFLAGS = $(GCC_ARFLAGS)
@@ -41,19 +41,20 @@ AS	= $(CC)
 LD	= $(PREFIX)g++
 AR	= $(PREFIX)ar
 
+# Flags to generate .d files
+DEPGENFLAGS = -MMD -MF $(@:%.o=%.d) -MT $@  -MP 
+
 # Compile C Rule
 $(OUTDIR)/%.o: %.c
 	@echo "  CC    $(notdir $@)"
 	@mkdir -p $(@D)
-	@$(CC) $(CFLAGS) -M -MF $(@:%.o=%.d) -MG -MT $@ $<
-	@$(CC) $(CFLAGS) -std=gnu99 -c -o $@ $<
+	@$(CC) $(CFLAGS) $(DEPGENFLAGS) -c -o $@ $<
 
 # Compile C++ Rule
 $(OUTDIR)/%.o: %.cpp
 	@echo "  CPP   $(notdir $@)"
 	@mkdir -p $(@D)
-	@$(CPP) $(CPPFLAGS) -M -MF $(@:%.o=%.d) -MG -MT $@ $<
-	@$(CPP) $(CPPFLAGS) -c -o $@ $<
+	@$(CPP) $(CPPFLAGS) $(DEPGENFLAGS) -c -o $@ $<
 
 # Rule to copy target file to a super-project specified output directory
 COPYTARGET=$(COPYTARGETTO)/$(notdir $(TARGET))
