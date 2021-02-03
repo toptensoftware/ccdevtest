@@ -37,8 +37,16 @@ DEFINE +=
 # Output Directory
 OUTDIR = ./bin/$(CONFIG)
 
+# Tool chain name
+ifeq ($(OS),Windows_NT)
+TOOLCHAIN ?= msvc
+else
+TOOLCHAIN ?= gcc
+endif
+
+
 # Include toolchain specific rules
-include $(RULESDIR)/Rules-msvc.mk
+include $(RULESDIR)/Rules-$(TOOLCHAIN).mk
 
 # List target
 list-target:
