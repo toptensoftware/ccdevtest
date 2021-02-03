@@ -42,7 +42,7 @@ LD	= $(PREFIX)g++
 AR	= $(PREFIX)ar
 
 # Flags to generate .d files
-DEPGENFLAGS = -MMD -MF $(@:%.o=%.d) -MT $@  -MP 
+DEPGENFLAGS = -MD -MF $(@:%.o=%.d) -MT $@  -MP 
 
 # Compile C Rule
 $(OUTDIR)/%.o: %.c
